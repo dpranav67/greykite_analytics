@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greykite Anomaly Detection — Home Depot Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hd-orange:   #f96302;
+  --hd-orange2:  #e05500;
+  --hd-black:    #1a1a1a;
+  --hd-dark:     #222222;
+  --hd-grey:     #f4f4f2;
+  --hd-midgrey:  #d4d4d0;
+  --hd-slate:    #3a3a3a;
+  --hd-white:    #ffffff;
+  --hd-green:    #2e7d32;
+  --hd-red:      #c62828;
+  --hd-yellow:   #f9a825;
+  --hd-blue:     #1565c0;
+
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body:    'Barlow', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--hd-white);
+  color: var(--hd-black);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* ─── HEADER STRIPE ─── */
+.hd-topbar {
+  background: var(--hd-orange);
+  height: 5px;
+}
+
+/* ─── NAV ─── */
+nav {
+  background: var(--hd-black);
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid var(--hd-orange);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-right: 3rem;
+}
+.thd-logo svg { display: block; }
+.thd-logo-footer svg { display: block; }
+.nav-logo span {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--hd-white);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.nav-logo span em {
+  color: var(--hd-orange);
+  font-style: normal;
+}
+nav a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 1rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  transition: all 0.2s;
+}
+nav a:hover { color: var(--hd-white); border-bottom-color: var(--hd-orange); }
+.nav-sep { flex: 1; }
+.nav-pill {
+  background: var(--hd-orange);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 2px;
+}
+
+/* ─── HERO ─── */
+.hero {
+  background: var(--hd-black);
+  position: relative;
+  overflow: hidden;
+  padding: 80px 2.5rem 70px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,.03) 39px,
+      rgba(255,255,255,.03) 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,.03) 39px,
+      rgba(255,255,255,.03) 40px
+    );
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(249,99,2,.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(249,99,2,.12);
+  border: 1px solid rgba(249,99,2,.35);
+  color: var(--hd-orange);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  margin-bottom: 1.5rem;
+}
+.hero-eyebrow::before {
+  content: '▶';
+  font-size: 0.55rem;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 5.2rem);
+  font-weight: 900;
+  line-height: 0.95;
+  color: var(--hd-white);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.hero h1 .orange { color: var(--hd-orange); }
+.hero h1 .block {
+  display: block;
+}
+.hero-sub {
+  color: #aaa;
+  max-width: 600px;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+}
+.hero-stats {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 2px;
+  width: fit-content;
+  overflow: hidden;
+}
+.hero-stat {
+  padding: 1.2rem 2rem;
+  border-right: 1px solid rgba(255,255,255,.08);
+  min-width: 130px;
+}
+.hero-stat:last-child { border-right: none; }
+.hero-stat .v {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--hd-white);
+  line-height: 1;
+}
+.hero-stat .v .u { color: var(--hd-orange); }
+.hero-stat .l {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* ─── SECTION CHROME ─── */
+.sec-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 64px 2.5rem;
+}
+.sec-wrap + .sec-wrap { border-top: 1px solid var(--hd-midgrey); }
+
+.sec-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hd-orange);
+  margin-bottom: 0.6rem;
+}
+.sec-label::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--hd-orange);
+}
+.sec-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--hd-black);
+  margin-bottom: 0.8rem;
+  line-height: 1.05;
+}
+.sec-desc {
+  color: var(--hd-slate);
+  max-width: 680px;
+  font-size: 0.9rem;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+  line-height: 1.8;
+}
+
+/* ─── WHAT IS GREYKITE ─── */
+.gk-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.gk-card {
+  background: var(--hd-grey);
+  border-left: 4px solid var(--hd-orange);
+  padding: 1.6rem 1.8rem;
+}
+.gk-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hd-black);
+  margin-bottom: 0.6rem;
+}
+.gk-card p {
+  font-size: 0.85rem;
+  color: var(--hd-slate);
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+/* ─── ARCHITECTURE DIAGRAM ─── */
+.arch-svg-wrap {
+  background: var(--hd-black);
+  border-radius: 4px;
+  padding: 2rem;
+  overflow-x: auto;
+}
+
+/* ─── SILVERKITE DEEP DIVE ─── */
+.sk-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--hd-midgrey);
+  border: 1px solid var(--hd-midgrey);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.sk-cell {
+  background: var(--hd-white);
+  padding: 1.4rem 1.6rem;
+}
+.sk-cell .sk-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+.sk-cell h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+  color: var(--hd-black);
+}
+.sk-cell p {
+  font-size: 0.78rem;
+  color: var(--hd-slate);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ─── CODE BLOCK ─── */
+.code-wrap {
+  background: #1e1e1e;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1.2rem 0;
+}
+.code-header {
+  background: #2d2d2d;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.code-fname {
+  font-size: 0.68rem;
+  color: #888;
+  margin-left: 4px;
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
+}
+pre {
+  padding: 1.2rem 1.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: #d4d4d4;
+  overflow-x: auto;
+  white-space: pre;
+}
+.kw  { color: #569cd6; }
+.fn  { color: #dcdcaa; }
+.str { color: #ce9178; }
+.cm  { color: #6a9955; font-style: italic; }
+.num { color: #b5cea8; }
+.cls { color: #4ec9b0; }
+.prp { color: #9cdcfe; }
+
+/* ─── PARAM TABLE ─── */
+.param-wrap {
+  border: 1px solid var(--hd-midgrey);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.param-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.param-table thead tr {
+  background: var(--hd-black);
+  color: var(--hd-white);
+}
+.param-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.param-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--hd-midgrey);
+  vertical-align: top;
+}
+.param-table tr:last-child td { border-bottom: none; }
+.param-table tr:nth-child(even) { background: var(--hd-grey); }
+.param-table td:first-child {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--hd-orange);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.param-table td:nth-child(2) {
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  color: var(--hd-blue);
+}
+.param-table td:last-child {
+  color: var(--hd-slate);
+  font-size: 0.78rem;
+  font-weight: 300;
+}
+
+/* ─── VS TABLE ─── */
+.vs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.vs-table th {
+  padding: 12px 20px;
+  text-align: left;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.vs-table th:nth-child(2) { background: #fff3e0; color: var(--hd-orange2); }
+.vs-table th:nth-child(3) { background: var(--hd-black); color: var(--hd-white); }
+.vs-table th:nth-child(4) { background: #fce4ec; color: var(--hd-red); }
+.vs-table th:first-child  { background: var(--hd-grey); color: var(--hd-black); }
+.vs-table td {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--hd-midgrey);
+  vertical-align: top;
+  font-weight: 300;
+  color: var(--hd-slate);
+}
+.vs-table td:nth-child(3) { background: rgba(0,0,0,.02); font-weight: 400; color: var(--hd-black); }
+.vs-table tr:hover td { background: var(--hd-grey); }
+.vs-table tr:hover td:nth-child(3) { background: #fff8f0; }
+.vs-wrap { border: 1px solid var(--hd-midgrey); border-radius: 4px; overflow: hidden; }
+
+/* ─── DETECTION FLOW STEPS ─── */
+.flow-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border: 1px solid var(--hd-midgrey);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.flow-step {
+  padding: 1.4rem 1.2rem;
+  background: var(--hd-white);
+  border-right: 1px solid var(--hd-midgrey);
+  position: relative;
+}
+.flow-step:last-child { border-right: none; }
+.flow-step::after {
+  content: '→';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--hd-orange);
+  font-size: 1.1rem;
+  z-index: 2;
+  background: white;
+  padding: 0 2px;
+}
+.flow-step:last-child::after { display: none; }
+.fs-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--hd-orange);
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.fs-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hd-black);
+  margin-bottom: 0.3rem;
+}
+.fs-desc {
+  font-size: 0.72rem;
+  color: var(--hd-slate);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ─── ANOMALY VISUAL ─── */
+.chart-card {
+  background: var(--hd-black);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.chart-card .ct {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+  margin-bottom: 1rem;
+}
+.chart-card .ct span { color: var(--hd-orange); }
+
+/* ─── REWARD + CI TUNING ─── */
+.callout {
+  background: #fff8f0;
+  border-left: 4px solid var(--hd-orange);
+  padding: 1.2rem 1.5rem;
+  border-radius: 0 4px 4px 0;
+  margin: 1.2rem 0;
+  font-size: 0.84rem;
+  color: var(--hd-slate);
+  line-height: 1.75;
+}
+.callout strong { color: var(--hd-black); font-weight: 600; }
+
+/* ─── COLUMNS ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+/* ─── METRIC BOX ─── */
+.metric-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: 1px solid var(--hd-midgrey);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.mbox {
+  padding: 1.4rem 1.2rem;
+  border-right: 1px solid var(--hd-midgrey);
+  background: var(--hd-white);
+  text-align: center;
+}
+.mbox:last-child { border-right: none; }
+.mbox.orange { background: var(--hd-orange); }
+.mbox.black  { background: var(--hd-black); }
+.mbox .mv {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--hd-black);
+  line-height: 1;
+}
+.mbox.orange .mv { color: white; }
+.mbox.black  .mv { color: var(--hd-orange); }
+.mbox .ml {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--hd-slate);
+  margin-top: 4px;
+  font-weight: 500;
+}
+.mbox.orange .ml { color: rgba(255,255,255,.75); }
+.mbox.black  .ml { color: #666; }
+
+/* ─── TAGS ─── */
+.tag {
+  display: inline-block;
+  font-size: 0.63rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 9px;
+  border-radius: 2px;
+  margin-top: 0.6rem;
+}
+.tag.orange { background: #fff3e0; color: var(--hd-orange); border: 1px solid #ffcc80; }
+.tag.dark   { background: #e8e8e8; color: var(--hd-black);  border: 1px solid #ccc; }
+.tag.green  { background: #e8f5e9; color: var(--hd-green);  border: 1px solid #a5d6a7; }
+.tag.blue   { background: #e3f2fd; color: var(--hd-blue);   border: 1px solid #90caf9; }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--hd-black);
+  border-top: 3px solid var(--hd-orange);
+  padding: 2rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+footer .thd-logo-footer { flex-shrink: 0; }
+footer p { font-size: 0.75rem; color: #666; }
+footer p span { color: var(--hd-orange); }
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-inner > * {
+  animation: fadeUp 0.5s ease both;
+}
+.hero-inner > :nth-child(1) { animation-delay: 0.05s; }
+.hero-inner > :nth-child(2) { animation-delay: 0.15s; }
+.hero-inner > :nth-child(3) { animation-delay: 0.25s; }
+.hero-inner > :nth-child(4) { animation-delay: 0.35s; }
+
+@media (max-width: 768px) {
+  .gk-overview, .two-col { grid-template-columns: 1fr; }
+  .sk-grid { grid-template-columns: 1fr 1fr; }
+  .flow-steps { grid-template-columns: 1fr; }
+  .flow-step::after { display: none; }
+  .metric-strip { grid-template-columns: repeat(3, 1fr); }
+  nav a { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="hd-topbar"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 226.34 226.33" height="38" width="38" style="display:block;flex-shrink:0;"><g fill="none"><path d="M.01.01h226.318v226.316H.01z" fill="#FFF"/><path fill="#F96302" d="M.01.01h142c11.43 0 22.863-.025 34.27.022-3.161 3.208-6.394 6.393-9.577 9.602 1.258 1.33 2.589 2.566 3.849 3.873 2.9-1.996 6.179-3.588 9.744-3.85 3.208-.333 6.44.5 9.387 1.783 1.117.475 2.163 1.235 3.422 1.354 1.236-.07 2.163-1.164 2.59-2.258.357-.759.024-1.663-.57-2.21-2.756-2.78-5.537-5.513-8.27-8.294 13.166-.07 26.332 0 39.475-.023 0 12.833.023 25.69 0 38.547-2.71-2.66-5.348-5.37-8.034-8.032-.713-.738-1.876-1.118-2.851-.666-.642.31-1.26.808-1.545 1.497-.357 1.38.262 2.733.808 3.968 1.664 3.518 2.4 7.487 1.902 11.361-.333 2.638-1.284 5.228-2.71 7.486a25.24 25.24 0 00-1.07 1.688c1.379 1.187 2.544 2.613 3.946 3.778 3.137-3.232 6.369-6.393 9.554-9.602 0 21.46.023 42.921 0 64.381-.62.214-1.308.642-1.95.332-.855-.546-1.497-1.354-2.21-2.043-7.7-7.653-15.33-15.377-23.052-23.005-3.066 3.066-6.083 6.155-9.198 9.15 1.64 1.853 3.47 3.493 5.182 5.275 6.179 6.18 12.357 12.36 18.56 18.537.523.547 1.14 1.023 1.426 1.736.095.784-.451 1.45-.665 2.162-.31.832.357 1.83 1.236 1.853.784.144 1.45-.38 1.949-.902 2.899-2.924 5.822-5.823 8.722-8.723v107.54H118.766c2.757-2.757 5.514-5.49 8.27-8.248a15855.845 15855.845 0 01-28.114-28.114c-3.065 2.947-6.012 6.013-9.054 8.983-.642.666-1.355 1.307-1.663 2.21-.143.88.665 1.711 1.52 1.76.76-.096 1.402-.596 2.163-.762.665-.046 1.189.476 1.663.904 5.562 5.608 11.147 11.17 16.732 16.755 1.4 1.472 2.923 2.803 4.229 4.325.595.665.19 1.52-.142 2.186H50.038l15.185-15.186c.95-.903 1.925-1.948 2.067-3.327.214-1.592-1.401-3.185-2.994-2.852-1.331.261-2.423 1.307-3.802 1.307-.88-.07-1.545-.713-2.14-1.283-12.096-12.073-24.168-24.169-36.241-36.243-.808-.807-1.782-1.59-2.068-2.757-.047-1.377.927-2.495 1.284-3.754.45-1.592-1.046-3.328-2.663-3.208-1.116.071-2.114.712-2.874 1.497-5.23 5.3-10.552 10.528-15.781 15.828C-.013 117.575.01 58.781.01.01"/><path fill="#FFF" d="M163.255 13.056c.214-.237.594-.452.808-.095a49488.629 49488.629 0 0149.67 49.67 11945.554 11945.554 0 00-17.42 17.443c-.761.713-1.688 1.307-2.733 1.378-1.45.12-2.9-1.188-2.781-2.662.048-1.449 1.283-2.566 1.307-4.04.048-.927-.665-1.615-1.26-2.258-12.286-12.262-24.55-24.548-36.836-36.836-.69-.665-1.45-1.497-2.495-1.425-1.545.023-2.71 1.45-4.277 1.283-.904.023-1.641-.69-2.092-1.426-.618-1.283-.048-2.828.88-3.778 5.75-5.752 11.502-11.503 17.229-17.254m23.86 4.824c.476-.879 1.379-1.687 2.448-1.545 1.188.096 2.044 1.07 2.828 1.854a8356.34 8356.34 0 0014.26 14.283c.903.88 1.972 1.735 2.186 3.042.119 1.354-1.117 2.566-2.424 2.71-1.093.023-2.091-.57-3.041-1.094-2.021-1.188-4.302-2.139-6.703-2.02-1.236-.024-2.423.475-3.541.974-1.307-1.402-2.804-2.66-4.04-4.11.38-1.07.879-2.092.95-3.234.168-2.589-.878-5.06-2.186-7.224-.665-1.069-1.188-2.4-.736-3.636M82.38 30.476c2.568-2.709 5.277-5.252 7.843-7.938 2.448 2.376 4.824 4.777 7.225 7.177.784.761.07 2.044-.808 2.353-.737.095-1.38-.404-2.044-.642-2.566-1.259-5.751-1.4-8.317-.023-.666.285-1.213.855-1.926.974-.713-.57-1.307-1.283-1.973-1.9m-1.615 1.52c3.493 3.374 6.868 6.868 10.314 10.266 5.395 5.371 10.765 10.79 16.184 16.161a1152.46 1152.46 0 01-9.316 9.316c-.642.712-1.925 1.022-2.543.142-.76-.808.07-1.806.309-2.638.285-.618-.213-1.164-.618-1.59A7115.543 7115.543 0 0176.464 45.02c-.57-.523-1.046-1.164-1.735-1.52-.95-.215-1.687.641-2.614.69-.713-.073-1.378-.785-1.283-1.523.047-.57.38-1.069.784-1.473 3.042-3.066 6.132-6.084 9.15-9.198M93.17 35.8c-.308-.784.238-1.734 1.07-1.853.618-.095 1.117.38 1.545.784 2.566 2.566 5.132 5.157 7.723 7.7.45.5 1.093.95 1.14 1.687.096.737-.617 1.45-1.377 1.378-1 0-1.76-.784-2.662-1.117-1.331-.617-2.947-.665-4.254.048-.69-.689-1.38-1.402-2.092-2.044.31-1.046.595-2.162.333-3.256-.19-1.235-1.046-2.186-1.426-3.327m45.51 1.854c.643-.642 1.45-1.117 2.354-1.236 1.59-.237 3.255 1.307 2.947 2.923-.214 1.426-1.402 2.566-1.308 4.065.238 1.044 1.094 1.757 1.782 2.495 12.145 12.12 24.289 24.216 36.385 36.36.666.595 1.33 1.38 2.282 1.38 1.426 0 2.519-1.07 3.874-1.309 1.568-.26 3.113 1.284 2.922 2.853-.094 1.07-.736 1.996-1.472 2.732-6.11 6.084-12.193 12.216-18.3 18.3-.784.784-1.782 1.497-2.946 1.497-1.285.071-2.52-1.02-2.686-2.28-.167-1.665 1.378-2.9 1.33-4.565-.071-.784-.617-1.425-1.14-1.996-10.671-10.646-21.318-21.317-31.988-31.964 8.817 16.374 17.705 32.702 26.522 49.076.142.237.26.5.38.784a45.51 45.51 0 00-1.877 1.877c-17.658-8.697-35.292-17.492-52.926-26.213-2.78-1.378-5.537-2.994-8.674-3.374-1.046-.144-1.76.713-2.52 1.26-.784.617-1.83.997-2.803.688-1.165-.522-1.973-1.9-1.616-3.16.237-.856.83-1.569 1.449-2.188 5.704-5.679 11.384-11.382 17.088-17.039 8.887 4.35 17.799 8.603 26.712 12.953.285.213.593.427.855.712.143-.167.262-.333.404-.499l-.333.047c-4.681-8.912-9.6-17.705-14.283-26.617 5.894-5.846 11.717-11.716 17.587-17.562m-31.204 4.016c.428-.784 1.64-.879 2.21-.214 2.4 2.424 4.849 4.848 7.272 7.273a910.815 910.815 0 01-8.174 8.151c-.618-.713-1.451-1.283-1.926-2.115.784-1.33 1.616-2.686 1.83-4.254.404-2.163.048-4.444-.88-6.44-.261-.76-.831-1.64-.332-2.4m-39.902 3.564c.475-.499.998-1.022 1.687-1.188.69-.142 1.545.285 1.64 1.045.167.832-.451 1.522-.617 2.33-.096.641.427 1.093.807 1.521 6.346 6.344 12.667 12.69 19.013 19.011.428.405.879.904 1.497 1.046.76-.07 1.4-.57 2.139-.736.903-.096 1.734.88 1.449 1.734-.118.642-.617 1.118-1.045 1.57-3.09 3.09-6.18 6.178-9.27 9.244-.545.547-1.258 1.117-2.067.927-.451-.19-.831-.547-.998-.998-.237-1.046.88-1.902.618-2.948-.237-.403-.57-.713-.88-1.045-2.898-2.876-5.774-5.799-8.697-8.674a191.478 191.478 0 01-3.09 3.09c-.713-.69-1.426-1.38-2.091-2.116 1.045-1.022 2.068-2.067 3.114-3.09-2.568-2.518-5.111-5.086-7.653-7.629-.547-.522-1.022-1.092-1.664-1.472-1.164-.38-2.281 1.26-3.398.356-.904-.64-.618-1.926.119-2.59 3.113-3.162 6.273-6.25 9.387-9.388"/><path fill="#FFF" d="M55.408 57.57c.714-.454 1.783-.168 2.115.64.333.974-.546 1.806-.57 2.757-.024.5.38.855.689 1.188 6.583 6.584 13.143 13.166 19.726 19.725 1.187 1.283 2.709-.927 3.992.024.832.666.547 1.972-.166 2.59-3.09 3.114-6.203 6.18-9.27 9.292-.498.476-.997 1.046-1.686 1.26-.761.214-1.688-.262-1.782-1.069-.143-.95.713-1.688.665-2.615-.12-.404-.38-.736-.665-1.045a6697.122 6697.122 0 01-18.657-18.656c-.593-.546-1.092-1.236-1.877-1.52-.855-.048-1.568.594-2.4.688-.713.024-1.331-.618-1.355-1.306-.071-.738.452-1.33.95-1.83 3.09-3.09 6.179-6.18 9.246-9.269.332-.309.64-.618 1.045-.855M38.226 74.561c1.426-1.379 2.804-2.805 4.23-4.207 2.496 2.425 4.943 4.943 7.439 7.391.428.475.95.903 1.187 1.521.286 1.165-1.044 2.448-2.21 1.925-1.164-.523-2.09-1.45-3.208-2.068-1.877-1.164-4.064-1.9-6.297-1.639-.642-.665-1.355-1.284-1.925-1.996.189-.38.499-.642.784-.927M27.864 84.922c2.662-2.614 5.276-5.252 7.914-7.89a4525.2 4525.2 0 0015.019 15.02c2.757 2.732 5.443 5.514 8.223 8.2.785.878 1.83.142 2.686-.168.855-.38 1.854.381 1.83 1.283 0 .618-.357 1.141-.76 1.57-3.232 3.208-6.417 6.416-9.625 9.625-.452.451-1.023.902-1.688.855-.737.072-1.45-.64-1.38-1.355.049-.76.643-1.378.643-2.139.048-.642-.5-1.046-.88-1.474-7.58-7.533-15.09-15.137-22.695-22.648.238-.309.452-.594.713-.879m178.359-2.329a771.351 771.351 0 018.77 8.77c.926.88.26 2.637-.975 2.828-1.141.166-2.02-.737-2.9-1.33-2.352-1.618-5.133-3.138-8.08-2.639-.784-.713-1.544-1.45-2.186-2.28 1.83-1.76 3.589-3.567 5.37-5.349M25.44 87.417c.88.333 1.426 1.331 2.139 1.95-.38 2.756.926 5.346 2.47 7.51.453.69.999 1.33 1.284 2.114.31 1.046-.712 2.14-1.758 2.02-.594 0-.998-.499-1.378-.855-2.591-2.615-5.204-5.18-7.795-7.795 1.71-1.617 3.304-3.35 5.038-4.944m52.878 13.405c4.729-1.522 9.862-1.688 14.734-.69 8.27 1.76 15.59 6.607 21.437 12.62 5.727 5.798 10.29 13.071 11.835 21.174.855 4.444.665 9.102-.617 13.451-1.26 4.302-3.543 8.271-6.418 11.693-1.236-1.307-2.59-2.519-3.78-3.85 0-.642.405-1.189.525-1.806.64-2.09 0-4.444-1.593-5.966-11.74-11.763-23.527-23.527-35.268-35.29-1.07-1.094-2.423-1.973-3.968-2.092-1.26-.166-2.496.285-3.684.712-.476.262-.784-.33-1.093-.57-.951-1.02-1.997-1.948-2.947-2.994 0-.07-.024-.214-.024-.285 3.16-2.709 6.869-4.824 10.86-6.107m32.037-1.308c1.093.356 2.09.903 3.113 1.426 3.827 1.854 7.628 3.78 11.479 5.656.332.167.64.428.927.69 3.23 3.28 6.488 6.511 9.743 9.767a16.91 16.91 0 006.369 4.23c1.687.642 3.589.642 5.276.047.856-.285 1.783-.617 2.686-.332a2.665 2.665 0 011.639 2.234c-.071 1.307-.903 2.4-1.782 3.303a765.314 765.314 0 01-8.793 8.77c-.784.713-1.687 1.45-2.781 1.568-1.568.237-3.113-1.425-2.638-2.947.452-1.545 1.07-3.113.809-4.729-.381-2.71-1.926-5.11-3.637-7.177-6.44-6.464-12.904-12.905-19.368-19.393-1-1.046-2.092-1.996-3.042-3.113m72.483 6.464c1.784-1.782 3.589-3.565 5.372-5.37.784.641 1.473 1.402 2.21 2.115-.31 2.376.5 4.728 1.735 6.725.64 1.141 1.568 2.115 2.139 3.303.309.571.095 1.212-.12 1.782a30.553 30.553 0 017.725 7.51c2.4 3.4 4.087 7.44 3.992 11.67.024 4.016-1.711 7.865-4.254 10.907-.69-.713-1.497-1.354-2.092-2.162.12-.88.547-1.735.333-2.614-.237-1.14-1.117-1.949-1.901-2.734-6.273-6.25-12.524-12.499-18.774-18.75-.618-.618-1.355-1.188-2.235-1.259-.831-.096-1.663.142-2.423.403-.737-.688-1.473-1.426-2.186-2.139 3.16-2.709 7.27-4.444 11.478-4.23 1.616-.047 3.185.333 4.753.69-1.901-1.973-3.922-3.827-5.752-5.847m-124.363 13.95c1.307-3.636 3.374-6.963 5.822-9.934 1.212 1.237 2.496 2.424 3.684 3.684.237.761-.38 1.474-.5 2.234-.617 2.044.19 4.278 1.689 5.751 11.549 11.574 23.123 23.124 34.697 34.697 1.117 1.213 2.47 2.353 4.182 2.615 1.52.238 3.019-.285 4.42-.808 1.284 1.283 2.568 2.543 3.85 3.826-2.804 2.448-6.06 4.373-9.53 5.728-5.228 2.02-11.074 2.352-16.564 1.141-8.342-1.83-15.685-6.845-21.555-12.953-5.418-5.679-9.792-12.643-11.336-20.415-1.045-5.156-.712-10.622 1.14-15.566m108.014 6.87c.286-3.613 1.878-7.059 4.255-9.769.688.713 1.426 1.426 2.138 2.14-.261.855-.666 1.758-.427 2.66.142.81.688 1.451 1.259 2.021 6.274 6.25 12.5 12.524 18.775 18.774.736.713 1.449 1.57 2.495 1.854.95.262 1.925-.072 2.85-.357.715.714 1.452 1.427 2.14 2.187-2.994 2.471-6.725 4.207-10.67 4.207-3.826.166-7.581-1.189-10.765-3.185-2.306-1.473-4.421-3.256-6.18-5.324.832 2.781.643 5.895-.665 8.51-1.283 2.565-3.28 4.657-5.252 6.677-.713-.713-1.45-1.45-2.187-2.163.619-.999 1.023-2.187.642-3.35-.451-1.19-1.426-2.045-2.281-2.948a1071.462 1071.462 0 00-5.324-5.347c-1.045-.975-2.163-2.092-3.66-2.187-.88-.094-1.663.357-2.4.785-.736-.713-1.45-1.45-2.186-2.162 2.85-2.876 6.107-5.847 10.29-6.37 3.422-.57 6.868.903 9.292 3.256-1.521-3.042-2.471-6.465-2.14-9.91M41.22 135.091c.713-.689 1.64-1.212 2.638-1.283 1.64-.096 3.138 1.615 2.685 3.208-.356 1.212-1.235 2.281-1.283 3.59.095 1.14 1.046 1.947 1.807 2.708l36.598 36.598c.57.547 1.212 1.093 2.02 1.164 1.378 0 2.448-1.02 3.755-1.33 1.568-.309 3.137 1.117 3.066 2.685-.048 1.07-.642 2.044-1.38 2.804l-18.417 18.42c-.808.783-1.806 1.472-2.97 1.472-1.426.048-2.757-1.306-2.64-2.757.145-1.425 1.332-2.566 1.357-4.04-.048-.879-.738-1.545-1.284-2.162-5.466-5.49-10.956-10.933-16.398-16.398-.214-.166-.5-.642-.808-.31-1.901 1.83-3.731 3.756-5.633 5.585-1.283-1.283-2.566-2.566-3.85-3.873a180.625 180.625 0 015.656-5.656c0-.096.025-.309.025-.405-5.158-5.06-10.22-10.195-15.353-15.304-.784-.737-1.522-1.663-2.614-1.925-1.497-.096-2.662 1.07-4.064 1.331-1.806.31-3.446-1.735-2.828-3.423.309-1.188 1.259-2.044 2.09-2.85 5.942-5.966 11.907-11.884 17.825-17.849m106.112 6.417c2.852 2.661 5.538 5.513 8.342 8.246a10086.52 10086.52 0 0016.018 16.041c.38.31.736.737 1.235.832 1.023.096 1.83-.903 2.853-.713.618.214 1.187.81 1.117 1.497 0 .927-.785 1.57-1.356 2.187-3.35 3.304-6.654 6.654-10.004 9.958-.737.808-2.116.404-2.567-.499-.665-1.117 1.14-2.306.19-3.327a8207.186 8207.186 0 01-20.652-20.653c-.5-.45-.926-1.02-1.521-1.33-1.022-.286-1.83.57-2.78.69-.737-.072-1.45-.714-1.403-1.475-.071-.832.547-1.472 1.069-2.019 3.162-3.138 6.323-6.298 9.459-9.435m-21.198 21.175c2.827-2.78 5.584-5.656 8.46-8.39 2.543 2.567 5.11 5.11 7.653 7.676.855.832-.048 2.092-.927 2.472-.618.071-1.19-.309-1.736-.546-2.185-1.07-4.705-1.593-7.105-.975-1.521.31-2.852 1.164-4.183 1.948-.713-.736-1.425-1.472-2.162-2.185m-11.551 11.573c3.28-3.327 6.608-6.583 9.887-9.887 5.323 5.253 10.575 10.6 15.923 15.852 4.088 4.064 8.128 8.176 12.239 12.216-3.184 3.28-6.463 6.464-9.65 9.72-.45.5-1.092.784-1.686 1.045-.594-.213-1.331-.427-1.521-1.092-.356-1.118.808-1.997.666-3.09-.476-.927-1.308-1.593-2.021-2.329l-17.325-17.326c-1.021-.95-1.877-2.09-3.09-2.803-1.211-.239-2.304 1.306-3.468.474-.998-.64-.713-2.067.046-2.78m23.053-5.893c-.38-.975.523-2.116 1.545-1.95.475.12.83.428 1.164.761 2.495 2.52 5.015 4.991 7.487 7.51.807.832 1.853 1.545 2.186 2.733-.31.523-.642 1.236-1.354 1.307-1.166.12-2.021-.808-3.067-1.189a5.104 5.104 0 00-4.586.025c-.76-.76-1.497-1.522-2.258-2.258.523-1.117.76-2.4.38-3.589-.285-1.212-1.093-2.21-1.497-3.35m15.28 6.202c.5-.76 1.712-.879 2.306-.166 2.567 2.591 5.182 5.157 7.724 7.771-2.923 2.852-5.727 5.846-8.722 8.627-.688-.737-1.426-1.45-2.14-2.187 2.544-3.136 2.9-7.676 1.19-11.288-.31-.856-.975-1.902-.357-2.757"/><path fill="#F96302" d="M.01 184.024c.95-.38 1.855-.975 2.9-.95 1.26.237 2.045 1.354 2.923 2.185 11.955 11.907 23.86 23.837 35.79 35.743.666.738 1.522 1.474 1.64 2.52-.047 1.021-.594 1.925-1.02 2.828-14.094-.024-28.162-.024-42.232-.024 0-14.093-.024-28.21 0-42.302"/><path fill="#FFF" d="M110.639 183.382c4.23-.356 8.437 1.164 11.93 3.47 2.733 1.83 5.276 3.945 7.224 6.583 2.33 3.113 3.755 6.916 3.78 10.837.07 4.468-1.688 8.983-4.872 12.143a88.187 88.187 0 01-2.163-2.162c.427-.807.926-1.663.784-2.614-.237-1.426-1.212-2.59-2.187-3.565l-16.041-16.042c-1.093-1.069-2.33-2.234-3.945-2.352-.88-.095-1.664.356-2.4.784-.69-.76-1.64-1.33-2.068-2.28 2.614-2.687 6.179-4.565 9.958-4.802z"/></g></svg>
+    <span style="color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-left:10px;">Analytics &middot; <em style="color:#f96302;font-style:normal;">Greykite</em></span>
+  </div>
+  <a href="#what">What is Greykite</a>
+  <a href="#silverkite">Silverkite Model</a>
+  <a href="#vs">vs Prophet</a>
+  <a href="#adconfig">AD Config</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#output">Output</a>
+  <div class="nav-sep"></div>
+  <div class="nav-pill">The Home Depot</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Anomaly Detection &middot; Season-Aware &middot; Built by LinkedIn</div>
+    <h1>
+      <span class="block">Greykite:</span>
+      <span class="block"><span class="orange">Forecast-First</span></span>
+      <span class="block">Anomaly Engine</span>
+    </h1>
+    <p class="hero-sub">Greykite is an open-source time-series forecasting and anomaly detection library developed by LinkedIn. Unlike threshold-based methods, it models <em>expected</em> behavior &mdash; seasonality, trends, holiday effects &mdash; and only flags deviations that the model can&rsquo;t explain.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="v">1<span class="u">M+</span></div>
+        <div class="l">Daily Series at LinkedIn</div>
+      </div>
+      <div class="hero-stat">
+        <div class="v">0.2<span class="u">%</span></div>
+        <div class="l">Target Alert Rate</div>
+      </div>
+      <div class="hero-stat">
+        <div class="v">50<span class="u">+</span></div>
+        <div class="l">Holiday Calendars</div>
+      </div>
+      <div class="hero-stat">
+        <div class="v">Auto</div>
+        <div class="l">Model Selection</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ WHAT IS GREYKITE ═══ -->
+<div class="sec-wrap" id="what">
+  <div class="sec-label">Section 01</div>
+  <div class="sec-title">What is Greykite?</div>
+  <div class="sec-desc">Greykite is LinkedIn's production-grade forecasting framework, open-sourced in 2021. It addresses the fundamental weakness of statistical anomaly methods: they don't understand time.</div>
+
+  <div class="gk-overview">
+    <div class="gk-card">
+      <h3>🏗 Core Philosophy</h3>
+      <p>Greykite treats anomaly detection as a two-step problem: <strong>(1)</strong> Build the best possible forecast of what a metric "should" be given its historical patterns. <strong>(2)</strong> Compare what actually happened against that forecast — anything outside the model's confidence interval is an anomaly. This is fundamentally different from IQR or rolling z-scores which have no temporal awareness.</p>
+    </div>
+    <div class="gk-card">
+      <h3>⚙️ Two Algorithms Inside</h3>
+      <p>Greykite ships with two forecast backends: <strong>Silverkite</strong> (LinkedIn's proprietary algorithm — fast, interpretable, production-proven at scale) and <strong>Prophet</strong> (Facebook's additive model). The <code>AUTO</code> template benchmarks both and picks the winner. Silverkite is the default champion — it's 10–100× faster than Prophet on large datasets.</p>
+    </div>
+    <div class="gk-card">
+      <h3>📐 Unified Framework</h3>
+      <p>Unlike running Prophet or SARIMA standalone, Greykite adds a full <strong>anomaly detection layer</strong> on top of any forecast model. The <code>ADConfig</code> + <code>GreykiteDetector</code> wrapping handles confidence interval tuning, alert rate calibration, and outlier-aware retraining — none of which Prophet exposes natively.</p>
+    </div>
+    <div class="gk-card">
+      <h3>🏭 Production Origin</h3>
+      <p>Greykite was designed for LinkedIn's business metrics infrastructure — monitoring millions of KPIs daily across user engagement, ads revenue, and job postings. It's built for <strong>batch processing at scale</strong>, irregular time series, sparse data, and campaigns with short history — exactly the challenges we face with TOFU campaign metrics.</p>
+    </div>
+  </div>
+
+  <!-- Architecture diagram -->
+  <div class="arch-svg-wrap">
+    <svg viewBox="0 0 960 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+      <defs>
+        <marker id="arw" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto">
+          <path d="M 0 0 L 7 3.5 L 0 7 Z" fill="#f96302"/>
+        </marker>
+      </defs>
+      <!-- Layer labels -->
+      <text x="20" y="20" fill="#666" font-size="9" font-family="Barlow, sans-serif" font-weight="600" text-transform="uppercase" letter-spacing="2">GREYKITE ARCHITECTURE</text>
+
+      <!-- Box 1: Input -->
+      <rect x="20" y="40" width="140" height="90" rx="3" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+      <rect x="20" y="40" width="140" height="4" rx="0" fill="#f96302"/>
+      <text x="90" y="72" text-anchor="middle" fill="#ddd" font-size="11" font-family="Barlow Condensed" font-weight="700">TIME SERIES INPUT</text>
+      <text x="90" y="90" text-anchor="middle" fill="#888" font-size="9" font-family="Barlow">ts · y columns</text>
+      <text x="90" y="106" text-anchor="middle" fill="#888" font-size="9" font-family="Barlow">daily / weekly / hourly</text>
+      <text x="90" y="122" text-anchor="middle" fill="#555" font-size="8" font-family="Barlow">DetectorData(df=...)</text>
+
+      <line x1="162" y1="85" x2="198" y2="85" stroke="#f96302" stroke-width="1.5" marker-end="url(#arw)"/>
+
+      <!-- Box 2: MetadataParam -->
+      <rect x="200" y="40" width="140" height="90" rx="3" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+      <rect x="200" y="40" width="140" height="4" fill="#f96302"/>
+      <text x="270" y="68" text-anchor="middle" fill="#ddd" font-size="11" font-family="Barlow Condensed" font-weight="700">METADATA PARAM</text>
+      <text x="270" y="86" text-anchor="middle" fill="#888" font-size="9" font-family="Barlow">freq · time_col</text>
+      <text x="270" y="102" text-anchor="middle" fill="#888" font-size="9" font-family="Barlow">value_col · timezone</text>
+      <text x="270" y="118" text-anchor="middle" fill="#555" font-size="8" font-family="Barlow">freq="D" for daily</text>
+
+      <line x1="342" y1="85" x2="378" y2="85" stroke="#f96302" stroke-width="1.5" marker-end="url(#arw)"/>
+
+      <!-- Box 3: ForecastConfig -->
+      <rect x="380" y="40" width="160" height="90" rx="3" fill="#1c1c1c" stroke="#f96302" stroke-width="1.5"/>
+      <rect x="380" y="40" width="160" height="4" fill="#f96302"/>
+      <text x="460" y="68" text-anchor="middle" fill="#f96302" font-size="11" font-family="Barlow Condensed" font-weight="800">FORECAST CONFIG</text>
+      <text x="460" y="86" text-anchor="middle" fill="#bbb" font-size="9" font-family="Barlow">ModelTemplate · AUTO</text>
+      <text x="460" y="102" text-anchor="middle" fill="#bbb" font-size="9" font-family="Barlow">Silverkite ↔ Prophet</text>
+      <text x="460" y="118" text-anchor="middle" fill="#777" font-size="8" font-family="Barlow">Holidays · EvalPeriod</text>
+
+      <line x1="542" y1="85" x2="578" y2="85" stroke="#f96302" stroke-width="1.5" marker-end="url(#arw)"/>
+
+      <!-- Box 4: ADConfig -->
+      <rect x="580" y="40" width="140" height="90" rx="3" fill="#1c1c1c" stroke="#f96302" stroke-width="1.5"/>
+      <rect x="580" y="40" width="140" height="4" fill="#f96302"/>
+      <text x="650" y="68" text-anchor="middle" fill="#f96302" font-size="11" font-family="Barlow Condensed" font-weight="800">AD CONFIG</text>
+      <text x="650" y="86" text-anchor="middle" fill="#bbb" font-size="9" font-family="Barlow">target_anomaly_%</text>
+      <text x="650" y="102" text-anchor="middle" fill="#bbb" font-size="9" font-family="Barlow">Reward · CI tuning</text>
+      <text x="650" y="118" text-anchor="middle" fill="#777" font-size="8" font-family="Barlow">auto-calibrate bands</text>
+
+      <line x1="722" y1="85" x2="758" y2="85" stroke="#f96302" stroke-width="1.5" marker-end="url(#arw)"/>
+
+      <!-- Box 5: Output -->
+      <rect x="760" y="40" width="175" height="90" rx="3" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+      <rect x="760" y="40" width="175" height="4" fill="#f96302"/>
+      <text x="847" y="68" text-anchor="middle" fill="#ddd" font-size="11" font-family="Barlow Condensed" font-weight="700">DETECTOR OUTPUT</text>
+      <text x="847" y="86" text-anchor="middle" fill="#888" font-size="9" font-family="Barlow">actual · forecast · bounds</text>
+      <text x="847" y="102" text-anchor="middle" fill="#888" font-size="9" font-family="Barlow">is_anomaly_predicted</text>
+      <text x="847" y="118" text-anchor="middle" fill="#555" font-size="8" font-family="Barlow">pred_df → BigQuery</text>
+    </svg>
+  </div>
+</div>
+
+
+<!-- ═══ SILVERKITE ═══ -->
+<div class="sec-wrap" id="silverkite">
+  <div class="sec-label">Section 02</div>
+  <div class="sec-title">Silverkite — The Engine Under the Hood</div>
+  <div class="sec-desc">Silverkite is Greykite's primary forecasting algorithm. Understanding it is key to understanding <em>why</em> Greykite detects anomalies correctly while IQR doesn't.</div>
+
+  <div class="sk-grid">
+    <div class="sk-cell">
+      <div class="sk-icon">📈</div>
+      <h4>Additive Decomposition</h4>
+      <p>Silverkite decomposes a time series into: <strong>Trend</strong> (long-run direction), <strong>Seasonality</strong> (weekly, monthly, yearly cycles), <strong>Holiday Effects</strong> (named event regressors), and <strong>Residual</strong> (what's left). An anomaly is only in the residual — not in the expected seasonal swing.</p>
+      <span class="tag orange">Core Model</span>
+    </div>
+    <div class="sk-cell">
+      <div class="sk-icon">⚡</div>
+      <h4>Ridge Regression Backend</h4>
+      <p>Unlike Prophet which uses MCMC (slow), Silverkite fits a <strong>regularized linear model (Ridge)</strong> on engineered features. The features include Fourier terms for seasonality, piecewise linear trend, and one-hot holiday indicators. This makes it 10–100× faster than Prophet with comparable accuracy.</p>
+      <span class="tag dark">Speed</span>
+    </div>
+    <div class="sk-cell">
+      <div class="sk-icon">📅</div>
+      <h4>Fourier-Based Seasonality</h4>
+      <p>Seasonality is captured using <strong>Fourier series</strong> — pairs of sin/cos terms at different frequencies. Weekly seasonality uses 3 Fourier pairs (period 7 days), yearly uses 8–15 pairs. This gives smooth, flexible seasonal curves without overfitting, unlike simple day-of-week dummies.</p>
+      <span class="tag blue">Feature Engineering</span>
+    </div>
+    <div class="sk-cell">
+      <div class="sk-icon">🗓</div>
+      <h4>Holiday Regressors</h4>
+      <p>For each US holiday, Silverkite creates a binary regressor for the holiday day plus <code>pre_num_days</code> and <code>post_num_days</code> windows. Each gets its own fitted coefficient — so Black Friday pre-window can have a large positive coefficient while the post-Thanksgiving slump has a negative one.</p>
+      <span class="tag green">Context-Aware</span>
+    </div>
+    <div class="sk-cell">
+      <div class="sk-icon">🔀</div>
+      <h4>Changepoint Detection</h4>
+      <p>Silverkite uses <strong>piecewise linear trend</strong> with automatic changepoint detection. When a campaign fundamentally changes its trajectory (new budget, channel shift), the model adapts its trend segment rather than treating the new level as an ongoing anomaly — avoiding the "level shift" false positive problem.</p>
+      <span class="tag orange">Trend</span>
+    </div>
+    <div class="sk-cell">
+      <div class="sk-icon">🎯</div>
+      <h4>AUTO Template Logic</h4>
+      <p>When <code>ModelTemplateEnum.AUTO</code> is used, Greykite evaluates multiple configurations: Silverkite-fast, Silverkite-full, and Prophet. It runs cross-validation on each and selects the one with the lowest prediction error. For campaign KPIs, Silverkite-fast typically wins on the speed-accuracy tradeoff.</p>
+      <span class="tag dark">AutoML</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Key Insight:</strong> The reason Greykite catches real anomalies and ignores seasonal patterns is that Silverkite explicitly <em>models</em> the seasonality before computing residuals. An IQR model sees a Black Friday spike as "extreme value." Greykite sees it as "expected large positive residual for this holiday regressor" — so it doesn't flag it. Only a drop that falls <em>outside</em> the expected holiday distribution is flagged.
+  </div>
+
+  <!-- Silverkite model formula visualization — two-panel layout -->
+  <div class="chart-card">
+    <div class="ct"><span>Silverkite</span> · Additive Model Decomposition</div>
+    <!-- Panel 1: component traces stacked vertically -->
+    <svg viewBox="0 0 860 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+
+      <!-- ── ROW 1: TREND (y 10–90) ── -->
+      <text x="16" y="26" fill="#f96302" font-size="11" font-family="Barlow Condensed" font-weight="800" letter-spacing="2">TREND</text>
+      <text x="16" y="41" fill="#555" font-size="9" font-family="Barlow">Long-run direction — piecewise linear with changepoints</text>
+      <!-- axes -->
+      <line x1="16" y1="80" x2="440" y2="80" stroke="#333" stroke-width="1"/>
+      <line x1="16" y1="50" x2="16"  y2="82" stroke="#333" stroke-width="1"/>
+      <!-- trend line gently rising -->
+      <path d="M 20 78 C 100 72, 220 62, 340 54 S 420 50, 438 48"
+            stroke="#f96302" stroke-width="2.5" fill="none"/>
+      <!-- changepoint marker -->
+      <line x1="220" y1="50" x2="220" y2="82" stroke="#f96302" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
+      <text x="216" y="90" fill="#888" font-size="8" font-family="Barlow">changepoint</text>
+      <!-- label -->
+      <text x="445" y="67" fill="#888" font-size="9" font-family="Barlow">piecewise linear,</text>
+      <text x="445" y="79" fill="#888" font-size="9" font-family="Barlow">auto-detected</text>
+
+      <!-- divider -->
+      <line x1="16" y1="106" x2="860" y2="106" stroke="#2a2a2a" stroke-width="1"/>
+
+      <!-- ── ROW 2: SEASONALITY (y 110–200) ── -->
+      <text x="16" y="126" fill="#4db6ac" font-size="11" font-family="Barlow Condensed" font-weight="800" letter-spacing="2">SEASONALITY</text>
+      <text x="16" y="141" fill="#555" font-size="9" font-family="Barlow">Fourier series — weekly (period 7) + yearly (period 365) cycles</text>
+      <!-- axes -->
+      <line x1="16" y1="186" x2="440" y2="186" stroke="#333" stroke-width="1"/>
+      <line x1="16" y1="150" x2="16"  y2="188" stroke="#333" stroke-width="1"/>
+      <!-- sine wave -->
+      <path d="M 20 168 Q 46 152 72 168 Q 98 184 124 168 Q 150 152 176 168 Q 202 184 228 168 Q 254 152 280 168 Q 306 184 332 168 Q 358 152 384 168 Q 410 184 436 168"
+            stroke="#4db6ac" stroke-width="2" fill="none"/>
+      <!-- period markers -->
+      <line x1="72"  y1="184" x2="72"  y2="190" stroke="#4db6ac" stroke-width="1" opacity=".5"/>
+      <line x1="124" y1="184" x2="124" y2="190" stroke="#4db6ac" stroke-width="1" opacity=".5"/>
+      <line x1="176" y1="184" x2="176" y2="190" stroke="#4db6ac" stroke-width="1" opacity=".5"/>
+      <text x="55"  y="200" fill="#555" font-size="8" font-family="Barlow">7d</text>
+      <text x="107" y="200" fill="#555" font-size="8" font-family="Barlow">7d</text>
+      <text x="159" y="200" fill="#555" font-size="8" font-family="Barlow">7d</text>
+      <!-- label -->
+      <text x="445" y="162" fill="#888" font-size="9" font-family="Barlow">sin/cos Fourier pairs:</text>
+      <text x="445" y="174" fill="#4db6ac" font-size="9" font-family="Barlow">weekly: 3 pairs</text>
+      <text x="445" y="186" fill="#4db6ac" font-size="9" font-family="Barlow">yearly: 8–15 pairs</text>
+
+      <!-- divider -->
+      <line x1="16" y1="210" x2="860" y2="210" stroke="#2a2a2a" stroke-width="1"/>
+
+      <!-- ── ROW 3: HOLIDAY (y 214–300) ── -->
+      <text x="16" y="230" fill="#ffd54f" font-size="11" font-family="Barlow Condensed" font-weight="800" letter-spacing="2">HOLIDAY REGRESSORS</text>
+      <text x="16" y="245" fill="#555" font-size="9" font-family="Barlow">Binary indicator per US holiday + pre/post windows (±2 days)</text>
+      <!-- baseline -->
+      <line x1="16" y1="286" x2="440" y2="286" stroke="#333" stroke-width="1"/>
+      <line x1="16" y1="256" x2="16"  y2="288" stroke="#333" stroke-width="1"/>
+      <!-- holiday spikes -->
+      <!-- Thanksgiving group -->
+      <rect x="100" y="264" width="8"  height="22" fill="#ffd54f" opacity=".35" rx="1"/>
+      <rect x="110" y="258" width="10" height="28" fill="#ffd54f" opacity=".7"  rx="1"/>
+      <rect x="122" y="264" width="8"  height="22" fill="#ffd54f" opacity=".35" rx="1"/>
+      <text x="104" y="300" fill="#888" font-size="8" font-family="Barlow">Thanksgiving</text>
+      <!-- Christmas group -->
+      <rect x="240" y="268" width="8"  height="18" fill="#ffd54f" opacity=".35" rx="1"/>
+      <rect x="250" y="260" width="10" height="26" fill="#ffd54f" opacity=".7"  rx="1"/>
+      <rect x="262" y="268" width="8"  height="18" fill="#ffd54f" opacity=".35" rx="1"/>
+      <text x="244" y="300" fill="#888" font-size="8" font-family="Barlow">Christmas</text>
+      <!-- 4th July group -->
+      <rect x="368" y="270" width="8"  height="16" fill="#ffd54f" opacity=".35" rx="1"/>
+      <rect x="378" y="264" width="10" height="22" fill="#ffd54f" opacity=".7"  rx="1"/>
+      <rect x="390" y="270" width="8"  height="16" fill="#ffd54f" opacity=".35" rx="1"/>
+      <text x="363" y="300" fill="#888" font-size="8" font-family="Barlow">4th of July</text>
+      <!-- legend -->
+      <rect x="445" y="258" width="8" height="12" fill="#ffd54f" opacity=".35" rx="1"/>
+      <text x="458" y="268" fill="#888" font-size="9" font-family="Barlow">pre/post window (±2 days)</text>
+      <rect x="445" y="275" width="10" height="14" fill="#ffd54f" opacity=".7" rx="1"/>
+      <text x="458" y="285" fill="#888" font-size="9" font-family="Barlow">holiday day (own coefficient)</text>
+
+      <!-- divider -->
+      <line x1="16" y1="314" x2="860" y2="314" stroke="#2a2a2a" stroke-width="1"/>
+
+      <!-- ── ROW 4: RESIDUAL / ANOMALY (y 318–410) ── -->
+      <text x="16" y="334" fill="#ef5350" font-size="11" font-family="Barlow Condensed" font-weight="800" letter-spacing="2">RESIDUAL  =  ANOMALY ZONE</text>
+      <text x="16" y="349" fill="#555" font-size="9" font-family="Barlow">What's left after removing trend + seasonality + holiday. Anomaly iff |residual| &gt; CI width.</text>
+      <!-- axes -->
+      <line x1="16" y1="392" x2="440" y2="392" stroke="#333" stroke-width="1"/>
+      <line x1="16" y1="358" x2="16"  y2="394" stroke="#333" stroke-width="1"/>
+      <!-- CI band -->
+      <rect x="20" y="368" width="418" height="20" fill="#ef5350" opacity=".07" rx="2"/>
+      <line x1="20" y1="368" x2="438" y2="368" stroke="#ef5350" stroke-width="1" stroke-dasharray="4 3" opacity=".4"/>
+      <line x1="20" y1="388" x2="438" y2="388" stroke="#ef5350" stroke-width="1" stroke-dasharray="4 3" opacity=".4"/>
+      <text x="18" y="364" fill="#ef5350" font-size="8" font-family="Barlow" opacity=".7">upper bound</text>
+      <text x="18" y="400" fill="#ef5350" font-size="8" font-family="Barlow" opacity=".7">lower bound</text>
+      <!-- small residuals (normal) -->
+      <circle cx="60"  cy="378" r="3" fill="#4db6ac" opacity=".8"/>
+      <circle cx="110" cy="374" r="3" fill="#4db6ac" opacity=".8"/>
+      <circle cx="170" cy="381" r="3" fill="#4db6ac" opacity=".8"/>
+      <circle cx="230" cy="376" r="3" fill="#4db6ac" opacity=".8"/>
+      <circle cx="290" cy="382" r="3" fill="#4db6ac" opacity=".8"/>
+      <circle cx="380" cy="375" r="3" fill="#4db6ac" opacity=".8"/>
+      <!-- anomaly point (outside band) -->
+      <circle cx="330" cy="354" r="7" fill="#ef5350" opacity=".9"/>
+      <line x1="330" y1="361" x2="330" y2="368" stroke="#ef5350" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <text x="340" y="352" fill="#ef5350" font-size="9" font-family="Barlow Condensed" font-weight="700">← TRUE ANOMALY</text>
+      <text x="340" y="363" fill="#888" font-size="8" font-family="Barlow">actual &gt; forecast_upper</text>
+      <!-- normal label -->
+      <text x="445" y="368" fill="#4db6ac" font-size="9" font-family="Barlow">● Normal residuals</text>
+      <text x="445" y="380" fill="#888" font-size="8.5" font-family="Barlow">  inside CI → not flagged</text>
+      <text x="445" y="396" fill="#ef5350" font-size="9" font-family="Barlow">● Anomaly residual</text>
+      <text x="445" y="408" fill="#888" font-size="8.5" font-family="Barlow">  outside CI → is_anomaly = TRUE</text>
+
+      <!-- ── RIGHT PANEL: formula ── -->
+      <!-- vertical separator -->
+      <line x1="600" y1="10" x2="600" y2="420" stroke="#2a2a2a" stroke-width="1"/>
+
+      <!-- Formula block -->
+      <text x="620" y="42" fill="#aaa" font-size="10" font-family="Barlow Condensed" letter-spacing="2">THE MODEL EQUATION</text>
+      <!-- y(t) large -->
+      <text x="620" y="100" fill="#f96302" font-size="42" font-family="Barlow Condensed" font-weight="900">y(t)</text>
+      <text x="700" y="100" fill="#777" font-size="36" font-family="Barlow Condensed">=</text>
+
+      <text x="620" y="148" fill="#f96302" font-size="18" font-family="Barlow Condensed" font-weight="800">trend(t)</text>
+      <text x="620" y="168" fill="#555" font-size="9" font-family="Barlow">piecewise linear + changepoints</text>
+
+      <text x="700" y="154" fill="#777" font-size="24" font-family="Barlow Condensed">+</text>
+
+      <text x="620" y="210" fill="#4db6ac" font-size="18" font-family="Barlow Condensed" font-weight="800">season(t)</text>
+      <text x="620" y="228" fill="#555" font-size="9" font-family="Barlow">Fourier sin/cos weekly + yearly</text>
+
+      <text x="700" y="216" fill="#777" font-size="24" font-family="Barlow Condensed">+</text>
+
+      <text x="620" y="268" fill="#ffd54f" font-size="18" font-family="Barlow Condensed" font-weight="800">holiday(t)</text>
+      <text x="620" y="286" fill="#555" font-size="9" font-family="Barlow">US calendar regressors ±2 day window</text>
+
+      <text x="700" y="274" fill="#777" font-size="24" font-family="Barlow Condensed">+</text>
+
+      <text x="620" y="328" fill="#ef5350" font-size="18" font-family="Barlow Condensed" font-weight="800">residual(t)</text>
+      <text x="620" y="346" fill="#555" font-size="9" font-family="Barlow">unexplained deviation</text>
+
+      <!-- anomaly rule box -->
+      <rect x="615" y="368" width="232" height="44" rx="3" fill="#1e1e1e" stroke="#ef5350" stroke-width="1" opacity=".9"/>
+      <text x="625" y="384" fill="#ef5350" font-size="10" font-family="Barlow Condensed" font-weight="800">ANOMALY IF:</text>
+      <text x="625" y="400" fill="#ddd" font-size="9" font-family="Barlow">residual(t)  ∉  [lower_CI, upper_CI]</text>
+
+    </svg>
+  </div>
+</div>
+
+
+<!-- ═══ VS PROPHET ═══ -->
+<div class="sec-wrap" id="vs" style="background:var(--hd-grey);">
+  <div class="sec-label">Section 03</div>
+  <div class="sec-title">Greykite vs Prophet vs IQR</div>
+  <div class="sec-desc">Your stakeholder team currently uses IQR-based detection and is exploring Prophet. Here's the honest technical comparison across every dimension that matters for campaign anomaly monitoring.</div>
+
+  <div class="vs-wrap">
+    <table class="vs-table">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>IQR / Rolling Stats</th>
+          <th>Greykite (Silverkite)</th>
+          <th>Prophet standalone</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Seasonal Awareness</strong></td>
+          <td>None — flat threshold ignores time structure completely</td>
+          <td>Full — Fourier seasonality for weekly, monthly, yearly patterns</td>
+          <td>Full — additive seasonality via Fourier series (similar approach)</td>
+        </tr>
+        <tr>
+          <td><strong>Holiday Handling</strong></td>
+          <td>Not supported — Black Friday always triggers alert</td>
+          <td>Built-in 50+ country calendars with pre/post day windows per event</td>
+          <td>Holiday support but manual configuration required per country</td>
+        </tr>
+        <tr>
+          <td><strong>Computation Speed</strong></td>
+          <td>Near instant — just percentile computation</td>
+          <td>Fast — Ridge regression, 2–10s per series on daily data</td>
+          <td>Slow — MCMC inference, 20–120s per series (10–30× slower)</td>
+        </tr>
+        <tr>
+          <td><strong>Alert Rate Control</strong></td>
+          <td>Fixed (1.5×IQR = ~7% flag rate). No calibration.</td>
+          <td>Precise — <code>target_anomaly_percent</code> tunes CI width automatically</td>
+          <td>No native alert rate tuning. Must manually adjust interval width.</td>
+        </tr>
+        <tr>
+          <td><strong>Sparse/Short Series</strong></td>
+          <td>Unreliable below ~20 data points but won't refuse</td>
+          <td>Graceful gating — skips series &lt;30 days, returns NA cleanly</td>
+          <td>May fit but produce poor forecasts on short sparse history</td>
+        </tr>
+        <tr>
+          <td><strong>Changepoint Handling</strong></td>
+          <td>Rolling window adapts slowly, causes false positives during shifts</td>
+          <td>Automatic piecewise linear trend with changepoint detection</td>
+          <td>Automatic changepoints but may over-segment noisy series</td>
+        </tr>
+        <tr>
+          <td><strong>Anomaly Detection Layer</strong></td>
+          <td>Detection IS the method (residual = raw value vs band)</td>
+          <td>Dedicated <code>ADConfig</code> + <code>GreykiteDetector</code> wrapping — reward-based CI tuning</td>
+          <td>No native AD layer — must build custom thresholding on top of forecast</td>
+        </tr>
+        <tr>
+          <td><strong>Interpretability</strong></td>
+          <td>High — trivial to explain Q1/Q3</td>
+          <td>High — feature coefficients, component plots, SHAP available</td>
+          <td>Medium — component plots but coefficients not easily extracted</td>
+        </tr>
+        <tr>
+          <td><strong>Scale (1000+ series)</strong></td>
+          <td>Yes — vectorized numpy ops</td>
+          <td>Yes — designed for production at LinkedIn scale, multiprocessing-friendly</td>
+          <td>Challenging — single-threaded Stan backend, bottleneck at scale</td>
+        </tr>
+        <tr>
+          <td><strong>Greykite Integration</strong></td>
+          <td>Not applicable</td>
+          <td>Native — IS Greykite</td>
+          <td>Supported as <code>ModelTemplateEnum.PROPHET</code> backend — same <code>ADConfig</code> layer applies on top</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout" style="margin-top:1.5rem;">
+    <strong>For your team:</strong> Greykite supports Prophet as an interchangeable backend. You can use <code>ModelTemplateEnum.PROPHET</code> instead of <code>AUTO</code> and get the exact same <code>ADConfig</code> anomaly detection layer, holiday handling, and alert rate calibration — no code change needed beyond the template name. The <code>AUTO</code> mode benchmarks both and picks the best, so switching to Greykite doesn't mean abandoning Prophet; it means wrapping it with better infrastructure.
+  </div>
+</div>
+
+
+<!-- ═══ AD CONFIG ═══ -->
+<div class="sec-wrap" id="adconfig">
+  <div class="sec-label">Section 04</div>
+  <div class="sec-title">ADConfig — The Detection Policy</div>
+  <div class="sec-desc">ADConfig is what separates Greykite from "just running Prophet." It adds a feedback-loop calibration layer that automatically adjusts the model's confidence interval until the desired alert rate is achieved.</div>
+
+  <!-- Detection Flow -->
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="fs-num">01</div>
+      <div class="fs-title">Fit Forecast</div>
+      <div class="fs-desc">Silverkite/Prophet fits on full history. Learns trend, seasonality, holiday effects.</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-num">02</div>
+      <div class="fs-title">Generate PI</div>
+      <div class="fs-desc">Prediction interval [lower, upper] generated at initial <code>coverage=0.95</code> setting.</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-num">03</div>
+      <div class="fs-title">Evaluate Rate</div>
+      <div class="fs-desc">Count what % of historical points fall outside the interval. Compare to target 0.2%.</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-num">04</div>
+      <div class="fs-title">Tune CI Width</div>
+      <div class="fs-desc">Reward function widens or narrows the interval until alert rate matches target. Iterative optimization.</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-num">05</div>
+      <div class="fs-title">Flag Anomalies</div>
+      <div class="fs-desc">Final calibrated interval applied. Points outside → <code>is_anomaly_predicted = True</code>.</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <p style="font-size:.85rem;color:var(--hd-slate);font-weight:300;margin-bottom:1rem;">The <strong>Reward</strong> class in Greykite defines the optimization objective for CI calibration. Instead of a fixed z-score threshold, it maximizes a reward function balancing coverage and precision. This is the mechanism behind <code>target_anomaly_percent</code>.</p>
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dot" style="background:#ff5f57"></div>
+          <div class="code-dot" style="background:#febc2e"></div>
+          <div class="code-dot" style="background:#28c840"></div>
+          <div class="code-fname">ad_config.py — Home Depot implementation</div>
+        </div>
+        <pre><span class="kw">from</span> <span class="cls">greykite.detection.detector.config</span> <span class="kw">import</span> <span class="cls">ADConfig</span>
+<span class="kw">from</span> <span class="cls">greykite.detection.detector.reward</span> <span class="kw">import</span> <span class="cls">Reward</span>
+<span class="kw">from</span> <span class="cls">greykite.detection.detector.greykite</span> <span class="kw">import</span> <span class="cls">GreykiteDetector</span>
+
+<span class="cm"># target_anomaly_percent: ADConfig tunes CI width
+# so ~0.2% of historical days are flagged.
+# Lower = more strict (fewer alerts)
+# Higher = more sensitive (more alerts)</span>
+<span class="prp">ad_config</span> = <span class="cls">ADConfig</span>(
+    <span class="prp">target_anomaly_percent</span>=<span class="num">0.2</span>
+)
+
+<span class="prp">detector</span> = <span class="cls">GreykiteDetector</span>(
+    <span class="prp">forecast_config</span>=forecast_config,
+    <span class="prp">ad_config</span>=ad_config
+)
+
+<span class="cm"># Fit learns the expected behavior</span>
+<span class="prp">detector</span>.<span class="fn">fit</span>(data=<span class="cls">DetectorData</span>(df=series_df))
+
+<span class="cm"># Predict returns anomaly labels + full pred_df</span>
+<span class="prp">result</span> = <span class="prp">detector</span>.<span class="fn">predict</span>(train_data)
+<span class="prp">pred</span>   = <span class="prp">result</span>.pred_df
+
+<span class="cm"># Key output columns:</span>
+<span class="cm"># pred["actual"]              → observed value</span>
+<span class="cm"># pred["forecast"]            → model's expected value</span>
+<span class="cm"># pred["forecast_upper"]      → upper CI bound</span>
+<span class="cm"># pred["forecast_lower"]      → lower CI bound</span>
+<span class="cm"># pred["is_anomaly_predicted"] → True/False flag</span>
+</pre>
+      </div>
+    </div>
+
+    <div>
+      <p style="font-size:.85rem;color:var(--hd-slate);font-weight:300;margin-bottom:1rem;">Full ADConfig + ForecastConfig parameter reference used in the Home Depot TOFU pipeline:</p>
+      <div class="param-wrap">
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Value</th><th>Effect</th></tr></thead>
+          <tbody>
+            <tr><td>target_anomaly_percent</td><td>0.2</td><td>~0.2% of days flagged per series. Tune up for sensitivity.</td></tr>
+            <tr><td>model_template</td><td>AUTO</td><td>Benchmarks Silverkite + Prophet, picks best.</td></tr>
+            <tr><td>coverage</td><td>0.95</td><td>Starting PI width — then tuned by ADConfig reward loop.</td></tr>
+            <tr><td>forecast_horizon</td><td>1</td><td>Set to 1 for in-sample anomaly detection (not forecasting ahead).</td></tr>
+            <tr><td>test_horizon</td><td>7</td><td>Hold-out 7 days for MAPE evaluation after fit.</td></tr>
+            <tr><td>cv_max_splits</td><td>0</td><td>Skip cross-validation to speed up. Trade-off vs accuracy.</td></tr>
+            <tr><td>holiday_lookup_countries</td><td>["US"]</td><td>Loads US holiday calendar into model as regressors.</td></tr>
+            <tr><td>holiday_pre_num_days</td><td>2</td><td>2 days before each holiday get their own regressor.</td></tr>
+            <tr><td>holiday_post_num_days</td><td>2</td><td>2 days after each holiday get their own regressor.</td></tr>
+            <tr><td>freq</td><td>"D"</td><td>Daily granularity. Enables weekly Fourier seasonality.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ PIPELINE ═══ -->
+<div class="sec-wrap" id="pipeline" style="background:var(--hd-grey);">
+  <div class="sec-label">Section 05</div>
+  <div class="sec-title">Implementation Pipeline</div>
+  <div class="sec-desc">How Greykite is operationalized for weekly campaign monitoring — from BigQuery ingestion to anomaly output.</div>
+
+  <div class="metric-strip">
+    <div class="mbox orange"><div class="mv">3K+</div><div class="ml">Campaigns</div></div>
+    <div class="mbox"><div class="mv">6,808</div><div class="ml">Series Run</div></div>
+    <div class="mbox black"><div class="mv">2.6M</div><div class="ml">Rows Written</div></div>
+    <div class="mbox"><div class="mv">100</div><div class="ml">Parallel Workers</div></div>
+    <div class="mbox"><div class="mv">≤30</div><div class="ml">Min Days Req'd</div></div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <div class="code-dot" style="background:#ff5f57"></div>
+      <div class="code-dot" style="background:#febc2e"></div>
+      <div class="code-dot" style="background:#28c840"></div>
+      <div class="code-fname">greykite_pipeline.py — full per-series logic</div>
+    </div>
+    <pre><span class="kw">def</span> <span class="fn">process_campaign_group</span>(group, kpis=[<span class="str">"total_clicks"</span>, <span class="str">"total_impressions"</span>]):
+    <span class="kw">for</span> kpi <span class="kw">in</span> kpis:
+        <span class="cm"># ── 1. Prep series ──────────────────────────────────────────</span>
+        gk_data = group[[<span class="str">'Date'</span>, kpi]].rename(
+            columns={<span class="str">"Date"</span>: <span class="str">"ts"</span>, kpi: <span class="str">"y"</span>}
+        )
+        gk_data[<span class="str">'ts'</span>] = pd.<span class="fn">to_datetime</span>(gk_data[<span class="str">'ts'</span>])
+        gk_data[<span class="str">'y'</span>]  = gk_data[<span class="str">'y'</span>].fillna(<span class="num">0</span>).astype(float).ffill()
+
+        <span class="cm"># ── 2. Quality gate ─────────────────────────────────────────
+        # Skip constant series, zero-inflated (&gt;90%), &lt;30 days</span>
+        <span class="kw">if</span> <span class="fn">is_problematic_series</span>(group, kpi): <span class="kw">continue</span>
+        <span class="kw">if</span> len(gk_data) < <span class="num">30</span>: <span class="kw">continue</span>
+
+        <span class="cm"># ── 3. Config ────────────────────────────────────────────────</span>
+        forecast_config = <span class="cls">ForecastConfig</span>(
+            model_template=<span class="cls">ModelTemplateEnum</span>.AUTO.name,
+            metadata_param=<span class="cls">MetadataParam</span>(time_col=<span class="str">"ts"</span>, value_col=<span class="str">"y"</span>, freq=<span class="str">"D"</span>),
+            coverage=<span class="num">0.95</span>,
+            forecast_horizon=<span class="num">1</span>,
+            evaluation_period_param=<span class="cls">EvaluationPeriodParam</span>(
+                test_horizon=<span class="num">7</span>, cv_max_splits=<span class="num">0</span>
+            ),
+            model_components_param=<span class="cls">ModelComponentsParam</span>(events={
+                <span class="str">"holiday_lookup_countries"</span>: [<span class="str">"US"</span>],
+                <span class="str">"holiday_pre_num_days"</span>: <span class="num">2</span>,
+                <span class="str">"holiday_post_num_days"</span>: <span class="num">2</span>,
+            })
+        )
+        ad_config = <span class="cls">ADConfig</span>(target_anomaly_percent=<span class="num">0.2</span>)
+
+        <span class="cm"># ── 4. Fit + Predict ─────────────────────────────────────────</span>
+        detector = <span class="cls">GreykiteDetector</span>(
+            forecast_config=forecast_config,
+            ad_config=ad_config
+        )
+        detector.<span class="fn">fit</span>(data=<span class="cls">DetectorData</span>(df=gk_data))
+        result = detector.<span class="fn">predict</span>(<span class="cls">DetectorData</span>(df=gk_data))
+        pred   = result.pred_df
+
+        <span class="cm"># ── 5. Extract + MAPE ────────────────────────────────────────</span>
+        mape = <span class="fn">calculate_mape</span>(pred[<span class="str">"actual"</span>].values,
+                               pred[<span class="str">"forecast"</span>].values)
+
+        <span class="cm"># ── 6. Collect results ───────────────────────────────────────</span>
+        rows = pred[[<span class="str">"ts"</span>, <span class="str">"actual"</span>, <span class="str">"forecast"</span>,
+                     <span class="str">"forecast_upper"</span>, <span class="str">"forecast_lower"</span>,
+                     <span class="str">"is_anomaly_predicted"</span>]].copy()
+        rows[<span class="str">"campaign_id"</span>] = group[<span class="str">"campaign_id"</span>].iloc[<span class="num">0</span>]
+        rows[<span class="str">"KPI"</span>]         = kpi
+
+<span class="cm"># Parallel execution across all campaign groups</span>
+<span class="kw">with</span> mp.<span class="cls">Pool</span>(processes=<span class="fn">min</span>(<span class="num">100</span>, mp.<span class="fn">cpu_count</span>())) <span class="kw">as</span> pool:
+    results = pool.<span class="fn">starmap</span>(
+        process_campaign_group,
+        [(group, kpis) <span class="kw">for</span> _, group <span class="kw">in</span> df.<span class="fn">groupby</span>(<span class="str">"campaign_id"</span>)]
+    )
+</pre>
+  </div>
+</div>
+
+
+<!-- ═══ OUTPUT ═══ -->
+<div class="sec-wrap" id="output">
+  <div class="sec-label">Section 06</div>
+  <div class="sec-title">Output Schema & Interpreting Results</div>
+  <div class="sec-desc">Two BigQuery tables written per weekly run. Here's how to read and use every column output by the Greykite detector.</div>
+
+  <div class="two-col" style="margin-bottom:2rem;">
+    <div>
+      <p style="font-family:var(--font-display);font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--hd-orange);margin-bottom:.8rem;">▶ TOFU_Weekly_Updates — Anomaly Flags</p>
+      <div class="param-wrap">
+        <table class="param-table">
+          <thead><tr><th>Column</th><th>Type</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>actual</td><td>FLOAT</td><td>Observed KPI on that day</td></tr>
+            <tr><td>forecast</td><td>FLOAT</td><td>Greykite's expected value (trend + season + holiday)</td></tr>
+            <tr><td>forecast_upper</td><td>FLOAT</td><td>Upper confidence bound (calibrated to 0.2% rate)</td></tr>
+            <tr><td>forecast_lower</td><td>FLOAT</td><td>Lower confidence bound</td></tr>
+            <tr><td>Greykite_Anomaly</td><td>BOOL</td><td>TRUE = actual outside [lower, upper]. The alert signal.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <p style="font-family:var(--font-display);font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--hd-orange);margin-bottom:.8rem;">▶ MAPE_TOFU_Weekly_Updates — Model Quality</p>
+      <div class="param-wrap">
+        <table class="param-table">
+          <thead><tr><th>Column</th><th>Type</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Train_MAPE</td><td>FLOAT</td><td>% forecast error on training data. &lt;20% = good fit.</td></tr>
+            <tr><td>Test_MAPE</td><td>FLOAT</td><td>% error on 7-day holdout. High = untrust anomaly flags.</td></tr>
+            <tr><td>campaign_id</td><td>STRING</td><td>Campaign identifier</td></tr>
+            <tr><td>KPI</td><td>STRING</td><td>total_clicks or total_impressions</td></tr>
+            <tr><td>DataSource</td><td>STRING</td><td>SEM, PLA, SOCIAL_SNAPCHAT…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visual: anomaly annotation chart -->
+  <div class="chart-card">
+    <div class="ct"><span>Greykite Output</span> · How to read the pred_df</div>
+    <svg viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+      <defs>
+        <linearGradient id="ciGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f96302" stop-opacity=".15"/>
+          <stop offset="100%" stop-color="#f96302" stop-opacity=".03"/>
+        </linearGradient>
+      </defs>
+      <!-- CI band -->
+      <path d="M 40 55 Q 180 45 350 55 Q 480 62 580 45 Q 680 32 840 50
+               L 840 130 Q 680 120 580 125 Q 480 130 350 125 Q 180 115 40 120 Z"
+            fill="url(#ciGrad)"/>
+      <!-- Upper bound -->
+      <path d="M 40 55 Q 180 45 350 55 Q 480 62 580 45 Q 680 32 840 50"
+            fill="none" stroke="#f96302" stroke-width="1.2" stroke-dasharray="5 4" opacity=".6"/>
+      <!-- Lower bound -->
+      <path d="M 40 120 Q 180 115 350 125 Q 480 130 580 125 Q 680 120 840 130"
+            fill="none" stroke="#f96302" stroke-width="1.2" stroke-dasharray="5 4" opacity=".6"/>
+      <!-- Forecast line -->
+      <path d="M 40 88 Q 180 80 350 90 Q 480 96 580 85 Q 680 76 840 90"
+            fill="none" stroke="#f96302" stroke-width="2.2"/>
+      <!-- Actual data line -->
+      <polyline points="40,90 95,83 150,91 205,86 260,94 315,85 370,92 420,80 475,88 520,75 570,160 625,78 680,72 735,90 790,95 840,88"
+                fill="none" stroke="#fff" stroke-width="1.5" opacity=".8"/>
+      <!-- Normal points -->
+      <circle cx="150" cy="91" r="3" fill="#4db6ac"/>
+      <circle cx="260" cy="94" r="3" fill="#4db6ac"/>
+      <circle cx="420" cy="80" r="3" fill="#4db6ac"/>
+      <circle cx="680" cy="72" r="3" fill="#4db6ac"/>
+      <!-- Anomaly point -->
+      <circle cx="570" cy="160" r="7" fill="#ef5350"/>
+      <line x1="570" y1="125" x2="570" y2="150" stroke="#ef5350" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <!-- Labels -->
+      <text x="840" y="44" fill="#f96302" font-size="9" font-family="Barlow" opacity=".8">forecast_upper</text>
+      <text x="840" y="136" fill="#f96302" font-size="9" font-family="Barlow" opacity=".8">forecast_lower</text>
+      <text x="840" y="88" fill="#f96302" font-size="9.5" font-family="Barlow Condensed" font-weight="700">forecast</text>
+      <text x="600" y="170" fill="#ef5350" font-size="9.5" font-family="Barlow Condensed" font-weight="700">is_anomaly_predicted = TRUE</text>
+      <text x="600" y="182" fill="#888" font-size="8" font-family="Barlow">actual (160) &gt; forecast_upper (125)</text>
+      <text x="420" y="170" fill="#4db6ac" font-size="9" font-family="Barlow Condensed" font-weight="700">Normal points</text>
+      <text x="420" y="182" fill="#888" font-size="8" font-family="Barlow">inside CI band = FALSE</text>
+      <text x="40" y="20" fill="#888" font-size="9" font-family="Barlow">KPI value</text>
+      <!-- Y axis -->
+      <line x1="35" y1="15" x2="35" y2="185" stroke="#444" stroke-width="1"/>
+      <line x1="35" y1="185" x2="855" y2="185" stroke="#444" stroke-width="1"/>
+      <text x="445" y="205" text-anchor="middle" fill="#888" font-size="9" font-family="Barlow">Time (daily)</text>
+    </svg>
+  </div>
+
+  <div class="callout">
+    <strong>How to use MAPE for trust scoring:</strong> Before acting on a <code>Greykite_Anomaly = TRUE</code>, check the corresponding row in <code>MAPE_TOFU_Weekly_Updates</code>. A series with MAPE &gt; 100% (common in sparse SEM campaigns with zero-dominated history) means the forecast was unreliable — the anomaly flag may be noise. Filter to MAPE &lt; 50% for high-confidence alerts. This is a key advantage over IQR, which has no equivalent fit-quality diagnostic.
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="thd-logo-footer" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 226.34 226.33" height="32" width="32" style="display:block;flex-shrink:0;"><g fill="none"><path d="M.01.01h226.318v226.316H.01z" fill="#FFF"/><path fill="#F96302" d="M.01.01h142c11.43 0 22.863-.025 34.27.022-3.161 3.208-6.394 6.393-9.577 9.602 1.258 1.33 2.589 2.566 3.849 3.873 2.9-1.996 6.179-3.588 9.744-3.85 3.208-.333 6.44.5 9.387 1.783 1.117.475 2.163 1.235 3.422 1.354 1.236-.07 2.163-1.164 2.59-2.258.357-.759.024-1.663-.57-2.21-2.756-2.78-5.537-5.513-8.27-8.294 13.166-.07 26.332 0 39.475-.023 0 12.833.023 25.69 0 38.547-2.71-2.66-5.348-5.37-8.034-8.032-.713-.738-1.876-1.118-2.851-.666-.642.31-1.26.808-1.545 1.497-.357 1.38.262 2.733.808 3.968 1.664 3.518 2.4 7.487 1.902 11.361-.333 2.638-1.284 5.228-2.71 7.486a25.24 25.24 0 00-1.07 1.688c1.379 1.187 2.544 2.613 3.946 3.778 3.137-3.232 6.369-6.393 9.554-9.602 0 21.46.023 42.921 0 64.381-.62.214-1.308.642-1.95.332-.855-.546-1.497-1.354-2.21-2.043-7.7-7.653-15.33-15.377-23.052-23.005-3.066 3.066-6.083 6.155-9.198 9.15 1.64 1.853 3.47 3.493 5.182 5.275 6.179 6.18 12.357 12.36 18.56 18.537.523.547 1.14 1.023 1.426 1.736.095.784-.451 1.45-.665 2.162-.31.832.357 1.83 1.236 1.853.784.144 1.45-.38 1.949-.902 2.899-2.924 5.822-5.823 8.722-8.723v107.54H118.766c2.757-2.757 5.514-5.49 8.27-8.248a15855.845 15855.845 0 01-28.114-28.114c-3.065 2.947-6.012 6.013-9.054 8.983-.642.666-1.355 1.307-1.663 2.21-.143.88.665 1.711 1.52 1.76.76-.096 1.402-.596 2.163-.762.665-.046 1.189.476 1.663.904 5.562 5.608 11.147 11.17 16.732 16.755 1.4 1.472 2.923 2.803 4.229 4.325.595.665.19 1.52-.142 2.186H50.038l15.185-15.186c.95-.903 1.925-1.948 2.067-3.327.214-1.592-1.401-3.185-2.994-2.852-1.331.261-2.423 1.307-3.802 1.307-.88-.07-1.545-.713-2.14-1.283-12.096-12.073-24.168-24.169-36.241-36.243-.808-.807-1.782-1.59-2.068-2.757-.047-1.377.927-2.495 1.284-3.754.45-1.592-1.046-3.328-2.663-3.208-1.116.071-2.114.712-2.874 1.497-5.23 5.3-10.552 10.528-15.781 15.828C-.013 117.575.01 58.781.01.01"/><path fill="#FFF" d="M163.255 13.056c.214-.237.594-.452.808-.095a49488.629 49488.629 0 0149.67 49.67 11945.554 11945.554 0 00-17.42 17.443c-.761.713-1.688 1.307-2.733 1.378-1.45.12-2.9-1.188-2.781-2.662.048-1.449 1.283-2.566 1.307-4.04.048-.927-.665-1.615-1.26-2.258-12.286-12.262-24.55-24.548-36.836-36.836-.69-.665-1.45-1.497-2.495-1.425-1.545.023-2.71 1.45-4.277 1.283-.904.023-1.641-.69-2.092-1.426-.618-1.283-.048-2.828.88-3.778 5.75-5.752 11.502-11.503 17.229-17.254m23.86 4.824c.476-.879 1.379-1.687 2.448-1.545 1.188.096 2.044 1.07 2.828 1.854a8356.34 8356.34 0 0014.26 14.283c.903.88 1.972 1.735 2.186 3.042.119 1.354-1.117 2.566-2.424 2.71-1.093.023-2.091-.57-3.041-1.094-2.021-1.188-4.302-2.139-6.703-2.02-1.236-.024-2.423.475-3.541.974-1.307-1.402-2.804-2.66-4.04-4.11.38-1.07.879-2.092.95-3.234.168-2.589-.878-5.06-2.186-7.224-.665-1.069-1.188-2.4-.736-3.636M82.38 30.476c2.568-2.709 5.277-5.252 7.843-7.938 2.448 2.376 4.824 4.777 7.225 7.177.784.761.07 2.044-.808 2.353-.737.095-1.38-.404-2.044-.642-2.566-1.259-5.751-1.4-8.317-.023-.666.285-1.213.855-1.926.974-.713-.57-1.307-1.283-1.973-1.9m-1.615 1.52c3.493 3.374 6.868 6.868 10.314 10.266 5.395 5.371 10.765 10.79 16.184 16.161a1152.46 1152.46 0 01-9.316 9.316c-.642.712-1.925 1.022-2.543.142-.76-.808.07-1.806.309-2.638.285-.618-.213-1.164-.618-1.59A7115.543 7115.543 0 0176.464 45.02c-.57-.523-1.046-1.164-1.735-1.52-.95-.215-1.687.641-2.614.69-.713-.073-1.378-.785-1.283-1.523.047-.57.38-1.069.784-1.473 3.042-3.066 6.132-6.084 9.15-9.198M93.17 35.8c-.308-.784.238-1.734 1.07-1.853.618-.095 1.117.38 1.545.784 2.566 2.566 5.132 5.157 7.723 7.7.45.5 1.093.95 1.14 1.687.096.737-.617 1.45-1.377 1.378-1 0-1.76-.784-2.662-1.117-1.331-.617-2.947-.665-4.254.048-.69-.689-1.38-1.402-2.092-2.044.31-1.046.595-2.162.333-3.256-.19-1.235-1.046-2.186-1.426-3.327m45.51 1.854c.643-.642 1.45-1.117 2.354-1.236 1.59-.237 3.255 1.307 2.947 2.923-.214 1.426-1.402 2.566-1.308 4.065.238 1.044 1.094 1.757 1.782 2.495 12.145 12.12 24.289 24.216 36.385 36.36.666.595 1.33 1.38 2.282 1.38 1.426 0 2.519-1.07 3.874-1.309 1.568-.26 3.113 1.284 2.922 2.853-.094 1.07-.736 1.996-1.472 2.732-6.11 6.084-12.193 12.216-18.3 18.3-.784.784-1.782 1.497-2.946 1.497-1.285.071-2.52-1.02-2.686-2.28-.167-1.665 1.378-2.9 1.33-4.565-.071-.784-.617-1.425-1.14-1.996-10.671-10.646-21.318-21.317-31.988-31.964 8.817 16.374 17.705 32.702 26.522 49.076.142.237.26.5.38.784a45.51 45.51 0 00-1.877 1.877c-17.658-8.697-35.292-17.492-52.926-26.213-2.78-1.378-5.537-2.994-8.674-3.374-1.046-.144-1.76.713-2.52 1.26-.784.617-1.83.997-2.803.688-1.165-.522-1.973-1.9-1.616-3.16.237-.856.83-1.569 1.449-2.188 5.704-5.679 11.384-11.382 17.088-17.039 8.887 4.35 17.799 8.603 26.712 12.953.285.213.593.427.855.712.143-.167.262-.333.404-.499l-.333.047c-4.681-8.912-9.6-17.705-14.283-26.617 5.894-5.846 11.717-11.716 17.587-17.562m-31.204 4.016c.428-.784 1.64-.879 2.21-.214 2.4 2.424 4.849 4.848 7.272 7.273a910.815 910.815 0 01-8.174 8.151c-.618-.713-1.451-1.283-1.926-2.115.784-1.33 1.616-2.686 1.83-4.254.404-2.163.048-4.444-.88-6.44-.261-.76-.831-1.64-.332-2.4m-39.902 3.564c.475-.499.998-1.022 1.687-1.188.69-.142 1.545.285 1.64 1.045.167.832-.451 1.522-.617 2.33-.096.641.427 1.093.807 1.521 6.346 6.344 12.667 12.69 19.013 19.011.428.405.879.904 1.497 1.046.76-.07 1.4-.57 2.139-.736.903-.096 1.734.88 1.449 1.734-.118.642-.617 1.118-1.045 1.57-3.09 3.09-6.18 6.178-9.27 9.244-.545.547-1.258 1.117-2.067.927-.451-.19-.831-.547-.998-.998-.237-1.046.88-1.902.618-2.948-.237-.403-.57-.713-.88-1.045-2.898-2.876-5.774-5.799-8.697-8.674a191.478 191.478 0 01-3.09 3.09c-.713-.69-1.426-1.38-2.091-2.116 1.045-1.022 2.068-2.067 3.114-3.09-2.568-2.518-5.111-5.086-7.653-7.629-.547-.522-1.022-1.092-1.664-1.472-1.164-.38-2.281 1.26-3.398.356-.904-.64-.618-1.926.119-2.59 3.113-3.162 6.273-6.25 9.387-9.388"/><path fill="#FFF" d="M55.408 57.57c.714-.454 1.783-.168 2.115.64.333.974-.546 1.806-.57 2.757-.024.5.38.855.689 1.188 6.583 6.584 13.143 13.166 19.726 19.725 1.187 1.283 2.709-.927 3.992.024.832.666.547 1.972-.166 2.59-3.09 3.114-6.203 6.18-9.27 9.292-.498.476-.997 1.046-1.686 1.26-.761.214-1.688-.262-1.782-1.069-.143-.95.713-1.688.665-2.615-.12-.404-.38-.736-.665-1.045a6697.122 6697.122 0 01-18.657-18.656c-.593-.546-1.092-1.236-1.877-1.52-.855-.048-1.568.594-2.4.688-.713.024-1.331-.618-1.355-1.306-.071-.738.452-1.33.95-1.83 3.09-3.09 6.179-6.18 9.246-9.269.332-.309.64-.618 1.045-.855M38.226 74.561c1.426-1.379 2.804-2.805 4.23-4.207 2.496 2.425 4.943 4.943 7.439 7.391.428.475.95.903 1.187 1.521.286 1.165-1.044 2.448-2.21 1.925-1.164-.523-2.09-1.45-3.208-2.068-1.877-1.164-4.064-1.9-6.297-1.639-.642-.665-1.355-1.284-1.925-1.996.189-.38.499-.642.784-.927M27.864 84.922c2.662-2.614 5.276-5.252 7.914-7.89a4525.2 4525.2 0 0015.019 15.02c2.757 2.732 5.443 5.514 8.223 8.2.785.878 1.83.142 2.686-.168.855-.38 1.854.381 1.83 1.283 0 .618-.357 1.141-.76 1.57-3.232 3.208-6.417 6.416-9.625 9.625-.452.451-1.023.902-1.688.855-.737.072-1.45-.64-1.38-1.355.049-.76.643-1.378.643-2.139.048-.642-.5-1.046-.88-1.474-7.58-7.533-15.09-15.137-22.695-22.648.238-.309.452-.594.713-.879m178.359-2.329a771.351 771.351 0 018.77 8.77c.926.88.26 2.637-.975 2.828-1.141.166-2.02-.737-2.9-1.33-2.352-1.618-5.133-3.138-8.08-2.639-.784-.713-1.544-1.45-2.186-2.28 1.83-1.76 3.589-3.567 5.37-5.349M25.44 87.417c.88.333 1.426 1.331 2.139 1.95-.38 2.756.926 5.346 2.47 7.51.453.69.999 1.33 1.284 2.114.31 1.046-.712 2.14-1.758 2.02-.594 0-.998-.499-1.378-.855-2.591-2.615-5.204-5.18-7.795-7.795 1.71-1.617 3.304-3.35 5.038-4.944m52.878 13.405c4.729-1.522 9.862-1.688 14.734-.69 8.27 1.76 15.59 6.607 21.437 12.62 5.727 5.798 10.29 13.071 11.835 21.174.855 4.444.665 9.102-.617 13.451-1.26 4.302-3.543 8.271-6.418 11.693-1.236-1.307-2.59-2.519-3.78-3.85 0-.642.405-1.189.525-1.806.64-2.09 0-4.444-1.593-5.966-11.74-11.763-23.527-23.527-35.268-35.29-1.07-1.094-2.423-1.973-3.968-2.092-1.26-.166-2.496.285-3.684.712-.476.262-.784-.33-1.093-.57-.951-1.02-1.997-1.948-2.947-2.994 0-.07-.024-.214-.024-.285 3.16-2.709 6.869-4.824 10.86-6.107m32.037-1.308c1.093.356 2.09.903 3.113 1.426 3.827 1.854 7.628 3.78 11.479 5.656.332.167.64.428.927.69 3.23 3.28 6.488 6.511 9.743 9.767a16.91 16.91 0 006.369 4.23c1.687.642 3.589.642 5.276.047.856-.285 1.783-.617 2.686-.332a2.665 2.665 0 011.639 2.234c-.071 1.307-.903 2.4-1.782 3.303a765.314 765.314 0 01-8.793 8.77c-.784.713-1.687 1.45-2.781 1.568-1.568.237-3.113-1.425-2.638-2.947.452-1.545 1.07-3.113.809-4.729-.381-2.71-1.926-5.11-3.637-7.177-6.44-6.464-12.904-12.905-19.368-19.393-1-1.046-2.092-1.996-3.042-3.113m72.483 6.464c1.784-1.782 3.589-3.565 5.372-5.37.784.641 1.473 1.402 2.21 2.115-.31 2.376.5 4.728 1.735 6.725.64 1.141 1.568 2.115 2.139 3.303.309.571.095 1.212-.12 1.782a30.553 30.553 0 017.725 7.51c2.4 3.4 4.087 7.44 3.992 11.67.024 4.016-1.711 7.865-4.254 10.907-.69-.713-1.497-1.354-2.092-2.162.12-.88.547-1.735.333-2.614-.237-1.14-1.117-1.949-1.901-2.734-6.273-6.25-12.524-12.499-18.774-18.75-.618-.618-1.355-1.188-2.235-1.259-.831-.096-1.663.142-2.423.403-.737-.688-1.473-1.426-2.186-2.139 3.16-2.709 7.27-4.444 11.478-4.23 1.616-.047 3.185.333 4.753.69-1.901-1.973-3.922-3.827-5.752-5.847m-124.363 13.95c1.307-3.636 3.374-6.963 5.822-9.934 1.212 1.237 2.496 2.424 3.684 3.684.237.761-.38 1.474-.5 2.234-.617 2.044.19 4.278 1.689 5.751 11.549 11.574 23.123 23.124 34.697 34.697 1.117 1.213 2.47 2.353 4.182 2.615 1.52.238 3.019-.285 4.42-.808 1.284 1.283 2.568 2.543 3.85 3.826-2.804 2.448-6.06 4.373-9.53 5.728-5.228 2.02-11.074 2.352-16.564 1.141-8.342-1.83-15.685-6.845-21.555-12.953-5.418-5.679-9.792-12.643-11.336-20.415-1.045-5.156-.712-10.622 1.14-15.566m108.014 6.87c.286-3.613 1.878-7.059 4.255-9.769.688.713 1.426 1.426 2.138 2.14-.261.855-.666 1.758-.427 2.66.142.81.688 1.451 1.259 2.021 6.274 6.25 12.5 12.524 18.775 18.774.736.713 1.449 1.57 2.495 1.854.95.262 1.925-.072 2.85-.357.715.714 1.452 1.427 2.14 2.187-2.994 2.471-6.725 4.207-10.67 4.207-3.826.166-7.581-1.189-10.765-3.185-2.306-1.473-4.421-3.256-6.18-5.324.832 2.781.643 5.895-.665 8.51-1.283 2.565-3.28 4.657-5.252 6.677-.713-.713-1.45-1.45-2.187-2.163.619-.999 1.023-2.187.642-3.35-.451-1.19-1.426-2.045-2.281-2.948a1071.462 1071.462 0 00-5.324-5.347c-1.045-.975-2.163-2.092-3.66-2.187-.88-.094-1.663.357-2.4.785-.736-.713-1.45-1.45-2.186-2.162 2.85-2.876 6.107-5.847 10.29-6.37 3.422-.57 6.868.903 9.292 3.256-1.521-3.042-2.471-6.465-2.14-9.91M41.22 135.091c.713-.689 1.64-1.212 2.638-1.283 1.64-.096 3.138 1.615 2.685 3.208-.356 1.212-1.235 2.281-1.283 3.59.095 1.14 1.046 1.947 1.807 2.708l36.598 36.598c.57.547 1.212 1.093 2.02 1.164 1.378 0 2.448-1.02 3.755-1.33 1.568-.309 3.137 1.117 3.066 2.685-.048 1.07-.642 2.044-1.38 2.804l-18.417 18.42c-.808.783-1.806 1.472-2.97 1.472-1.426.048-2.757-1.306-2.64-2.757.145-1.425 1.332-2.566 1.357-4.04-.048-.879-.738-1.545-1.284-2.162-5.466-5.49-10.956-10.933-16.398-16.398-.214-.166-.5-.642-.808-.31-1.901 1.83-3.731 3.756-5.633 5.585-1.283-1.283-2.566-2.566-3.85-3.873a180.625 180.625 0 015.656-5.656c0-.096.025-.309.025-.405-5.158-5.06-10.22-10.195-15.353-15.304-.784-.737-1.522-1.663-2.614-1.925-1.497-.096-2.662 1.07-4.064 1.331-1.806.31-3.446-1.735-2.828-3.423.309-1.188 1.259-2.044 2.09-2.85 5.942-5.966 11.907-11.884 17.825-17.849m106.112 6.417c2.852 2.661 5.538 5.513 8.342 8.246a10086.52 10086.52 0 0016.018 16.041c.38.31.736.737 1.235.832 1.023.096 1.83-.903 2.853-.713.618.214 1.187.81 1.117 1.497 0 .927-.785 1.57-1.356 2.187-3.35 3.304-6.654 6.654-10.004 9.958-.737.808-2.116.404-2.567-.499-.665-1.117 1.14-2.306.19-3.327a8207.186 8207.186 0 01-20.652-20.653c-.5-.45-.926-1.02-1.521-1.33-1.022-.286-1.83.57-2.78.69-.737-.072-1.45-.714-1.403-1.475-.071-.832.547-1.472 1.069-2.019 3.162-3.138 6.323-6.298 9.459-9.435m-21.198 21.175c2.827-2.78 5.584-5.656 8.46-8.39 2.543 2.567 5.11 5.11 7.653 7.676.855.832-.048 2.092-.927 2.472-.618.071-1.19-.309-1.736-.546-2.185-1.07-4.705-1.593-7.105-.975-1.521.31-2.852 1.164-4.183 1.948-.713-.736-1.425-1.472-2.162-2.185m-11.551 11.573c3.28-3.327 6.608-6.583 9.887-9.887 5.323 5.253 10.575 10.6 15.923 15.852 4.088 4.064 8.128 8.176 12.239 12.216-3.184 3.28-6.463 6.464-9.65 9.72-.45.5-1.092.784-1.686 1.045-.594-.213-1.331-.427-1.521-1.092-.356-1.118.808-1.997.666-3.09-.476-.927-1.308-1.593-2.021-2.329l-17.325-17.326c-1.021-.95-1.877-2.09-3.09-2.803-1.211-.239-2.304 1.306-3.468.474-.998-.64-.713-2.067.046-2.78m23.053-5.893c-.38-.975.523-2.116 1.545-1.95.475.12.83.428 1.164.761 2.495 2.52 5.015 4.991 7.487 7.51.807.832 1.853 1.545 2.186 2.733-.31.523-.642 1.236-1.354 1.307-1.166.12-2.021-.808-3.067-1.189a5.104 5.104 0 00-4.586.025c-.76-.76-1.497-1.522-2.258-2.258.523-1.117.76-2.4.38-3.589-.285-1.212-1.093-2.21-1.497-3.35m15.28 6.202c.5-.76 1.712-.879 2.306-.166 2.567 2.591 5.182 5.157 7.724 7.771-2.923 2.852-5.727 5.846-8.722 8.627-.688-.737-1.426-1.45-2.14-2.187 2.544-3.136 2.9-7.676 1.19-11.288-.31-.856-.975-1.902-.357-2.757"/><path fill="#F96302" d="M.01 184.024c.95-.38 1.855-.975 2.9-.95 1.26.237 2.045 1.354 2.923 2.185 11.955 11.907 23.86 23.837 35.79 35.743.666.738 1.522 1.474 1.64 2.52-.047 1.021-.594 1.925-1.02 2.828-14.094-.024-28.162-.024-42.232-.024 0-14.093-.024-28.21 0-42.302"/><path fill="#FFF" d="M110.639 183.382c4.23-.356 8.437 1.164 11.93 3.47 2.733 1.83 5.276 3.945 7.224 6.583 2.33 3.113 3.755 6.916 3.78 10.837.07 4.468-1.688 8.983-4.872 12.143a88.187 88.187 0 01-2.163-2.162c.427-.807.926-1.663.784-2.614-.237-1.426-1.212-2.59-2.187-3.565l-16.041-16.042c-1.093-1.069-2.33-2.234-3.945-2.352-.88-.095-1.664.356-2.4.784-.69-.76-1.64-1.33-2.068-2.28 2.614-2.687 6.179-4.565 9.958-4.802z"/></g></svg></div>
+  <p>Home Depot Product Analytics Team &middot; Greykite Anomaly Detection Framework &middot; <span>Built by Pranav Dhakulkar</span> &middot; Jan 2026</p>
+</footer>
+
+<script>
+  // Scroll-reveal for section content
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const children = entry.target.querySelectorAll(
+        '.gk-card, .sk-cell, .flow-step, .mbox, .comp-card, .gk-overview > *, .two-col > *, .three-col > *'
+      );
+      children.forEach((el, i) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        el.style.transition = `opacity 0.35s ${i * 0.06}s ease, transform 0.35s ${i * 0.06}s ease`;
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 50);
+      });
+      io.unobserve(entry.target);
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.sec-wrap').forEach(s => io.observe(s));
+</script>
+</body>
+</html>
